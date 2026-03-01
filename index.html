@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>一日日志 · 个人定制</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: #f4f6fa;
+            padding: 1.2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            max-width: 780px;
+            width: 100%;
+        }
+        .app-header {
+            margin-bottom: 1.8rem;
+            text-align: left;
+        }
+        .app-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(145deg, #1f2b3c, #2c3e50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.2rem;
+        }
+        .app-header p {
+            color: #5e6f8d;
+            font-size: 1rem;
+            border-left: 4px solid #8a9bb5;
+            padding-left: 0.8rem;
+        }
+        .card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            box-shadow: 0 12px 28px -8px rgba(0,20,40,0.12), 0 4px 12px rgba(0,0,0,0.02);
+            padding: 1.8rem 1.5rem;
+            margin-bottom: 2.2rem;
+            border: 1px solid #ffffff50;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 22px 34px -12px rgba(0,35,70,0.18);
+            transform: translateY(-2px);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem 1rem;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #3b4b66;
+            margin-bottom: 0.25rem;
+        }
+        .input-wrapper {
+            background: #f0f4fe;
+            border-radius: 18px;
+            padding: 0.1rem 1rem;
+            border: 1.5px solid transparent;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+        }
+        .input-wrapper:focus-within {
+            background: #ffffff;
+            border-color: #7c8fbc;
+            box-shadow: 0 0 0 3px #d3defa;
+        }
+        .input-wrapper input, 
+        .input-wrapper textarea,
+        .input-wrapper select {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 0.75rem 0;
+            font-size: 1rem;
+            outline: none;
+            color: #1e293b;
+        }
+        .input-wrapper textarea {
+            resize: vertical;
+            min-height: 60px;
+            padding: 0.7rem 0;
+        }
+        .input-wrapper input[type="number"] {
+            -moz-appearance: textfield;
+            -webkit-appearance: textfield;
+            appearance: textfield;
+        }
+        .input-wrapper input[type="number"]::-webkit-outer-spin-button,
+        .input-wrapper input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .emoji-icon {
+            font-size: 1.3rem;
+            margin-right: 0.5rem;
+            opacity: 0.7;
+        }
+        .apps-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.6rem;
+            grid-column: 1 / -1;
+        }
+        .apps-row .input-wrapper {
+            padding-left: 0.8rem;
+            padding-right: 0.8rem;
+        }
+        .button-group {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 0.8rem;
+        }
+        .btn {
+            background: #eef2f8;
+            border: none;
+            border-radius: 40px;
+            padding: 0.9rem 2rem;
+            font-size: 1rem;
+            font-weight: 550;
+            color: #1e2b40;
+            cursor: pointer;
+            transition: all 0.15s;
+            flex: 1 1 auto;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            border: 1px solid #dae1ed;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #2d4059;
+            border-color: #1f2e44;
+            color: white;
+            box-shadow: 0 6px 14px rgba(35, 60, 95, 0.25);
+        }
+        .btn-primary:hover {
+            background: #1f3147;
+            transform: scale(1.01);
+        }
+        .btn-secondary:hover {
+            background: #e0e6f2;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .history-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 1.2rem;
+        }
+        .history-header h2 {
+            font-size: 1.6rem;
+            font-weight: 580;
+            color: #263445;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .record-stats {
+            color: #6b7b98;
+            font-size: 0.9rem;
+            background: #e9eef6;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+        }
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        .record-card {
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 1.3rem 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            border: 1px solid #eef2f8;
+            transition: all 0.15s;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+        .record-card:hover {
+            background: #fbfdff;
+            border-color: #cbd5e6;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.03);
+        }
+        .record-date-badge {
+            font-size: 1.2rem;
+            font-weight: 650;
+            background: #e9effa;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            color: #1f344d;
+            margin-right: 1.5rem;
+            min-width: 130px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .record-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.6rem 1.2rem;
+            color: #253545;
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+        .record-content-item {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            background: #f6f9ff;
+            padding: 0.25rem 0.7rem;
+            border-radius: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .record-content-item span:first-child {
+            opacity: 0.7;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        .record-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 10px;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            padding: 8px 10px;
+            cursor: pointer;
+            border-radius: 30px;
+            background: #f0f4fc;
+            color: #2c3f5c;
+            transition: all 0.1s;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-btn:hover {
+            background: #dbe2f0;
+            transform: scale(1.05);
+        }
+        .icon-btn.delete:hover {
+            background: #ffe2e2;
+            color: #b33;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: #f4f8ff;
+            border-radius: 50px;
+            color: #677b9f;
+            font-size: 1.1rem;
+            border: 2px dashed #cbd6e6;
+            margin-top: 2rem;
+        }
+        footer {
+            margin-top: 2.5rem;
+            font-size: 0.8rem;
+            color: #8b9bb9;
+            text-align: center;
+            padding-bottom: 1.5rem;
+        }
+        @media (max-width: 560px) {
+            .container { padding: 0; }
+            .card { padding: 1.5rem 1rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .apps-row { grid-template-columns: 1fr; }
+            .record-card { flex-direction: column; }
+            .record-date-badge { margin-bottom: 0.8rem; }
+            .record-actions { align-self: flex-end; margin-top: 0.5rem; }
+            .record-content { grid-template-columns: 1fr; }
+            .button-group .btn { padding: 0.8rem 1rem; }
+            .btn-primary { padding: 0.8rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="app-header">
+        <h1>📓 一日日志 · 只属于你</h1>
+        <p>手机使用 · 专注运动 · 饮食喝水 — 每日专属快照</p>
+    </div>
+
+    <div class="card">
+        <form id="entryForm" autocomplete="off">
+            <div class="form-grid">
+                <div class="full-width">
+                    <div class="form-label">📅 日期</div>
+                    <div class="input-wrapper">
+                        <span class="emoji-icon">🗓️</span>
+                        <input type="date" id="dateField" required>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-label">📱 手机使用时长</div>
+                    <div class="input-wrapper">
+                        <span class="emoji-icon">⏱️</span>
+                        <input type="text" id="phoneTime" placeholder="例如 2.5h / 150分钟" value="">
+                    </div>
+                </div>
+
+                <div class="apps-row">
+                    <div>
+                        <div class="form-label">① 最耗时App</div>
+                        <div class="input-wrapper"><input type="text" id="app1" placeholder="微信"></div>
+                    </div>
+                    <div>
+                        <div class="form-label">② 次耗时App</div>
+                        <div class="input-wrapper"><input type="text" id="app2" placeholder="抖音"></div>
+                    </div>
+                    <div>
+                        <div class="form-label">③ 第三耗时App</div>
+                        <div class="input-wrapper"><input type="text" id="app3" placeholder="浏览器"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-label">🏋️ 运动时间</div>
+                    <div class="input-wrapper">
+                        <span class="emoji-icon">⏳</span>
+                        <input type="text" id="sportTime" placeholder="40分钟 / 1h">
+                    </div>
+                </div>
+                <div>
+                    <div class="form-label">🧘 运动内容</div>
+                    <div class="input-wrapper">
+                        <span class="emoji-icon">💪</span>
+                        <input type="text" id="sportContent" placeholder="跑步/瑜伽/力量">
+                    </div>
+                </div>
+
+                <div class="full-width">
+                    <div class="form-label">🍽️ 饮食描述</div>
+                    <div class="input-wrapper">
+                        <span class="emoji-icon">🥗</span>
+                        <textarea id="diet" rows="2" placeholder="早餐/午餐/晚餐 或 主要食物"></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-label">💧 喝水 (杯)</div>
+                    <div class="input-wrapper">
+                        <span class="emoji-icon">🚰</span>
+                        <input type="number" id="water" step="0.5" min="0" placeholder="例如 6">
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">📌 保存今日记录</button>
+                <button type="button" class="btn btn-secondary" id="resetFormBtn">🔄 清空表单</button>
+                <button type="button" class="btn btn-secondary" id="clearAllBtn">🗑️ 删除所有历史</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="history-header">
+        <h2>📋 过往日记 <span class="record-stats" id="statsCount">0 条记录</span></h2>
+    </div>
+    <div id="historyContainer" class="history-list">
+        <div class="empty-message">✨ 还没有任何记录，填写上方表单开始吧</div>
+    </div>
+    <footer>
+        ⚡ 所有数据仅保存在你的浏览器本地 · 高度定制 · 每日回顾
+    </footer>
+</div>
+
+<script>
+    (function() {
+        // DOM 元素
+        const form = document.getElementById('entryForm');
+        const dateField = document.getElementById('dateField');
+        const phoneTime = document.getElementById('phoneTime');
+        const app1 = document.getElementById('app1');
+        const app2 = document.getElementById('app2');
+        const app3 = document.getElementById('app3');
+        const sportTime = document.getElementById('sportTime');
+        const sportContent = document.getElementById('sportContent');
+        const diet = document.getElementById('diet');
+        const water = document.getElementById('water');
+        const resetFormBtn = document.getElementById('resetFormBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const historyContainer = document.getElementById('historyContainer');
+        const statsSpan = document.getElementById('statsCount');
+        const STORAGE_KEY = 'dailyLogs_v2';
+
+        // 获取今日日期 (YYYY-MM-DD)
+        const getTodayStr = () => {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        };
+
+        // 设置默认日期为今天
+        const setDefaultDate = () => {
+            dateField.value = getTodayStr();
+        };
+
+        // 重置表单
+        const resetForm = () => {
+            setDefaultDate();
+            phoneTime.value = '';
+            app1.value = '';
+            app2.value = '';
+            app3.value = '';
+            sportTime.value = '';
+            sportContent.value = '';
+            diet.value = '';
+            water.value = '';
+        };
+
+        // 加载记录
+        const loadRecords = () => {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    console.warn('存储解析失败', e);
+                    return [];
+                }
+            }
+            return [];
+        };
+
+        // 保存记录
+        const saveRecords = (records) => {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        };
+
+        // 渲染历史记录
+        const renderHistory = () => {
+            const records = loadRecords();
+            const sorted = [...records].sort((a, b) => b.date.localeCompare(a.date));
+            
+            // 更新统计
+            statsSpan.textContent = `${sorted.length} 条记录`;
+            
+            if (sorted.length === 0) {
+                historyContainer.innerHTML = '<div class="empty-message">📭 还没有记录，填写上方表单开始吧</div>';
+                return;
+            }
+
+            historyContainer.innerHTML = '';
+            sorted.forEach(rec => {
+                const card = document.createElement('div');
+                card.className = 'record-card';
+                
+                // 日期格式化
+                const [year, month, day] = rec.date.split('-');
+                const displayDate = `${year}年${month}月${day}日`;
+                
+                // 日期徽标
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'record-date-badge';
+                dateDiv.innerHTML = `📆 ${displayDate}`;
+                
+                // 内容区域
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'record-content';
+                
+                // 手机使用
+                const phoneItem = document.createElement('div');
+                phoneItem.className = 'record-content-item';
+                phoneItem.innerHTML = `<span>📱使用</span> ${rec.phoneTime || '—'}`;
+                
+                // APP使用
+                const appsItem = document.createElement('div');
+                appsItem.className = 'record-content-item';
+                appsItem.innerHTML = `<span>📲APP</span> ${[rec.app1, rec.app2, rec.app3].filter(Boolean).join(' · ') || '—'}`;
+                
+                // 运动
+                const sportItem = document.createElement('div');
+                sportItem.className = 'record-content-item';
+                sportItem.innerHTML = `<span>🏃运动</span> ${rec.sportTime ? rec.sportTime + (rec.sportContent ? ` · ${rec.sportContent}` : '') : '—'}`;
+                
+                // 饮食
+                const dietItem = document.createElement('div');
+                dietItem.className = 'record-content-item';
+                dietItem.innerHTML = `<span>🍽️饮食</span> ${rec.diet || '—'}`;
+                
+                // 喝水
+                const waterItem = document.createElement('div');
+                waterItem.className = 'record-content-item';
+                waterItem.innerHTML = `<span>💧喝水</span> ${rec.water ? rec.water + ' 杯' : '—'}`;
+                
+                contentDiv.append(phoneItem, appsItem, sportItem, dietItem, waterItem);
+                
+                // 操作按钮
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'record-actions';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'icon-btn';
+                editBtn.innerHTML = '✏️';
+                editBtn.title = '填充到表单 (可修改后保存)';
+                editBtn.addEventListener('click', () => {
+                    dateField.value = rec.date;
+                    phoneTime.value = rec.phoneTime || '';
+                    app1.value = rec.app1 || '';
+                    app2.value = rec.app2 || '';
+                    app3.value = rec.app3 || '';
+                    sportTime.value = rec.sportTime || '';
+                    sportContent.value = rec.sportContent || '';
+                    diet.value = rec.diet || '';
+                    water.value = rec.water || '';
+                    form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+                
+                const delBtn = document.createElement('button');
+                delBtn.className = 'icon-btn delete';
+                delBtn.innerHTML = '🗑️';
+                delBtn.title = '删除此记录';
+                delBtn.addEventListener('click', () => {
+                    if (confirm(`确定删除 ${displayDate} 的记录吗？`)) {
+                        const current = loadRecords();
+                        const filtered = current.filter(r => r.date !== rec.date);
+                        saveRecords(filtered);
+                        renderHistory();
+                    }
+                });
+                
+                actionsDiv.append(editBtn, delBtn);
+                card.append(dateDiv, contentDiv, actionsDiv);
+                historyContainer.appendChild(card);
+            });
+        };
+
+        // 处理重复日期
+        const handleDuplicate = (newRecord) => {
+            const records = loadRecords();
+            const existing = records.find(r => r.date === newRecord.date);
+            if (existing) {
+                return confirm(`日期 ${newRecord.date} 已有记录，是否覆盖？`);
+            }
+            return true;
+        };
+
+        // 初始化
+        setDefaultDate();
+        renderHistory();
+
+        // 事件监听
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!dateField.value) {
+                alert('请选择日期');
+                return;
+            }
+
+            const newRecord = {
+                date: dateField.value,
+                phoneTime: phoneTime.value.trim(),
+                app1: app1.value.trim(),
+                app2: app2.value.trim(),
+                app3: app3.value.trim(),
+                sportTime: sportTime.value.trim(),
+                sportContent: sportContent.value.trim(),
+                diet: diet.value.trim(),
+                water: water.value.trim()
+            };
+
+            if (!handleDuplicate(newRecord)) return;
+
+            const records = loadRecords();
+            const existingIndex = records.findIndex(r => r.date === newRecord.date);
+            if (existingIndex !== -1) {
+                records[existingIndex] = newRecord;
+            } else {
+                records.push(newRecord);
+            }
+            saveRecords(records);
+            renderHistory();
+            resetForm();
+        });
+
+        resetFormBtn.addEventListener('click', () => {
+            if (confirm('重置所有输入框？日期将保持今天。')) {
+                resetForm();
+            }
+        });
+
+        clearAllBtn.addEventListener('click', () => {
+            if (confirm('⚠️ 确定要删除全部历史记录吗？此操作无法撤销。')) {
+                localStorage.removeItem(STORAGE_KEY);
+                renderHistory();
+                resetForm();
+            }
+        });
+
+        // 修复：确保首次访问不显示示例（已移除示例数据，避免混淆）
+        // 优化：直接使用本地存储，首次无数据时显示空状态
+    })();
+</script>
+</body>
+</html>
